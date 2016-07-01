@@ -129,7 +129,7 @@ highlight clear SignColumn
 let g:syntastic_check_on_open=1
 let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_quiet_messages = { "type": "style" }
+let g:syntastic_quiet_messages = { "regex": 'E402' }
 
 " YouCompleteMe
 let g:ycm_key_list_select_completion = ['<Down>','<Enter>']

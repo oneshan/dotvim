@@ -1,3 +1,3 @@
 [submodule "bundle/Vundle.vim"]
 	path = bundle/Vundle.vim
-	url = github-oneshan:VundleVim/Vundle.vim.git
+	url = github.com:VundleVim/Vundle.vim.git
