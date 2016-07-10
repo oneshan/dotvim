@@ -61,7 +61,7 @@ au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn,txt} setfiletype markdown
 au Filetype html,css setlocal et ts=2 sw=2
 au Filetype html,css EmmetInstall 
 au Filetype javascript setlocal et ts=4 sw=4 sts=0
-au FileType python setlocal et sta sw=4 sts=4 cc=79 foldmethod=indent
+au FileType python setlocal et sta sw=4 sts=4 cc=100 foldmethod=indent
 au! BufNewFile,BufRead * setlocal nofoldenable
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -129,7 +129,8 @@ highlight clear SignColumn
 let g:syntastic_check_on_open=1
 let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_quiet_messages = { "regex": 'E402' }
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+let g:syntastic_python_flake8_args="--ignore=E402 --max-line-length=100"
 
 " YouCompleteMe
 let g:ycm_key_list_select_completion = ['<Down>','<Enter>']
@@ -166,6 +167,9 @@ nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
 map <F3> :NERDTreeToggle<CR>
 map <F4> :TagbarToggle<CR>
 map <F9> :w<CR>:call Debug()<CR>
+
+noremap <C-w>e :SyntasticCheck<CR>
+noremap <C-w>f :SyntasticToggleMode<CR>
 
 nmap <silent> [g :<C-U> :GitGutterLineHighlightsToggle<CR>
 nmap <silent> [h :<C-U> :lprev<CR>
