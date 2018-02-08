@@ -21,11 +21,13 @@ dotvim
 
 ## Install Plugin YouCompleteMe
 
-  $ sudo yum install cmake build-essential cmake python-dev
+  $ (CentOS) sudo yum install cmake build-essential cmake python-dev
+  
+  $ (MacOS) brew install cmake
 
   $ cd ~/.vim/bundle/YouCompleteMe
 
-  $ ./install.sh --clang-completer
+  $ python install.py
 
 ## Install ctags
 
