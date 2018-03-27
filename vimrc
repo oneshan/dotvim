@@ -52,6 +52,9 @@ set backup
 set backupdir=~/.vim/backup,.
 set directory=~/.vim/backup,.
 
+" ctags
+set tags=./tags;,tags;
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " VIM setting with specific filetypes 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
@@ -91,7 +94,7 @@ Plugin 'airblade/vim-gitgutter'
 " Color preview for vim
 Plugin 'gorodinskiy/vim-coloresque'
 " A syntax checking plugin for Vim 
-Plugin 'scrooloose/syntastic.git'
+Plugin 'vim-syntastic/syntastic'
 " Auto Complete Code
 Plugin 'Valloric/YouCompleteMe'
 " TextMate-style snippets for Vim 
@@ -103,6 +106,11 @@ Plugin 'SirVer/ultisnips'
 Plugin 'mattn/emmet-vim'
 " A plugin for markdown
 Plugin 'tpope/vim-markdown'
+" Fuzzy file, buffer, mru, tag, etc finder
+Plugin 'ctrlpvim/ctrlp.vim'
+" git
+Plugin 'tpope/vim-fugitive.git'
+
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -126,10 +134,15 @@ highlight clear SignColumn
  highlight GitGutterChangeDelete ctermfg=yellow
 
 " syntastic
-let g:syntastic_check_on_open=1
-let g:syntastic_python_checkers = ['flake8']
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
 let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_python_flake8_args="--ignore=E402 --max-line-length=100"
 
 " YouCompleteMe
@@ -153,6 +166,32 @@ let g:markdown_fenced_languages = ['html', 'python', 'bash=sh']
 let g:vim_markdown_folding_disabled=1
 let g:vim_markdown_math=1         " LeTeX math
 let g:vim_markdown_frontmatter=1  " Highlight YAML frontmatter
+
+" Ctrlp
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*/.git/*
+nnoremap <leader>. :CtrlPTag<cr>
+nnoremap <leader>, :CtrlP<cr>
+
+let g:ctrlp_match_window = 'bottom,order:ttb'
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_open_new_file = 'tr'
+let g:ctrlp_open_multiple_files = 'tr'
+let g:ctrlp_custom_ignore = {
+    \ 'dir': '\v[\/]\.(git|hg|svn|node_modules)$',
+    \ 'file': '\v\.(so|pyc|swp|zip|DS_Store)$',
+    \ }
+if executable('ag')
+    set grepprg=ag\ --nogroup\ --nocolor 
+    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+    let g:ctrlp_switch_buffer = 0
+    let g:ctrlp_use_caching = 0
+endif
+
+" Airline
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#tabline#fnamemod = ':t'
+" let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#tab_nr_type = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Mapping
