@@ -64,7 +64,7 @@ au BufRead,BufNewFile *.{md,markdown,mdown,mkd,mkdn,txt} setfiletype markdown
 au Filetype html,css setlocal et ts=2 sw=2
 au Filetype html,css EmmetInstall 
 au Filetype javascript setlocal et ts=4 sw=4 sts=0
-au FileType python setlocal et sta sw=4 sts=4 cc=100 foldmethod=indent
+au FileType python setlocal et sta sw=4 sts=4 cc=120 foldmethod=indent
 au! BufNewFile,BufRead * setlocal nofoldenable
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -143,7 +143,7 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_python_checkers = ['flake8']
-let g:syntastic_python_flake8_args="--ignore=E402 --max-line-length=100"
+let g:syntastic_python_flake8_args="--ignore=E402 --max-line-length=120"
 
 " YouCompleteMe
 let g:ycm_key_list_select_completion = ['<Down>','<Enter>']
