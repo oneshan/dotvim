@@ -76,41 +76,36 @@ filetype off                  " required
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-" Bundles
-" Let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-" A statusline plugin for vim
-Plugin 'bling/vim-airline'
-" A tree explorer plugin for navigating the filesystem
-Plugin 'scrooloose/nerdtree'
-" List table of function/variable like IDE
-Plugin 'majutsushi/tagbar' 
-" Bind a key to toggle the Location List (\l) and the Quickfix List (\q)
-Plugin 'milkypostman/vim-togglelist.git'
-" Easy motion (\w)
-Plugin 'Lokaltog/vim-easymotion' 
-" A Vim plugin which shows a git diff in the guttter and stages/reverts hunks.
-Plugin 'airblade/vim-gitgutter'
-" Color preview for vim
-Plugin 'gorodinskiy/vim-coloresque'
-" A syntax checking plugin for Vim 
-Plugin 'vim-syntastic/syntastic'
-" Auto Complete Code
-Plugin 'Valloric/YouCompleteMe'
-" TextMate-style snippets for Vim 
-Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'tomtom/tlib_vim'
-Plugin 'honza/vim-snippets'
-Plugin 'SirVer/ultisnips'
-" Zen coding (html, css)
-Plugin 'mattn/emmet-vim'
-" A plugin for markdown
-Plugin 'tpope/vim-markdown'
-" Fuzzy file, buffer, mru, tag, etc finder
-Plugin 'ctrlpvim/ctrlp.vim'
-" git
-Plugin 'tpope/vim-fugitive.git'
+Plugin 'VundleVim/Vundle.vim'              " Let Vundle manage Vundle, required
 
+" Code/Project navigation
+Plugin 'scrooloose/nerdtree'               " A Tree explorer plugin for navigating the filesystem
+Plugin 'majutsushi/tagbar'                 " List table of function/variable like IDE
+Plugin 'ctrlpvim/ctrlp.vim'                " Fuzzy file, buffer, mru, tag, etc finder
+
+" Tool
+Plugin 'itchyny/lightline.vim'             " A statusline plugin for vim
+Plugin 'milkypostman/vim-togglelist.git'   " Bind a key to toggle the Location List (\l) and the Quickfix List (\q)
+Plugin 'Lokaltog/vim-easymotion'           " Easy motion (\w)
+Plugin 'gorodinskiy/vim-coloresque'        " Color preview for vim
+
+" TextMate-style snippets
+Plugin 'MarcWeber/vim-addon-mw-utils'      " dependencies #1
+Plugin 'tomtom/tlib_vim'                   " dependencies #2
+Plugin 'honza/vim-snippets'                " Snippets repo
+Plugin 'SirVer/ultisnips'                  " Snippets manager
+
+" Develop
+Plugin 'vim-syntastic/syntastic'           " A syntax checking plugin for Vim
+Plugin 'maralla/completor.vim'             " Auto Complete Code
+Plugin 'cjrh/vim-conda'                    " Change conda environments in the Vim editor
+Plugin 'mattn/emmet-vim'                   " Zen coding (html, css)
+Plugin 'davidhalter/jedi-vim'              " Python
+
+" Git
+Plugin 'tpope/vim-fugitive.git'            " Git commands
+Plugin 'airblade/vim-gitgutter'            " Show git diff sign
+Plugin 'junegunn/gv.vim'                   " Commit browser with GV command
 
 call vundle#end()            " required
 filetype plugin indent on    " required
@@ -125,14 +120,6 @@ let NERDTreeIgnore=['\~$', '\.pyc$', '\.swp$']
 " EasyMotion
 let g:EasyMotion_leader_key = '\'
 
-" GitGutter
-let g:gitgutter_highlight_lines = 1
-highlight clear SignColumn
- highlight GitGutterAdd ctermfg=green
- highlight GitGutterChange ctermfg=yellow
- highlight GitGutterDelete ctermfg=red
- highlight GitGutterChangeDelete ctermfg=yellow
-
 " syntastic
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -145,14 +132,11 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_python_checkers = ['flake8']
 let g:syntastic_python_flake8_args="--ignore=E402 --max-line-length=120"
 
-" YouCompleteMe
-let g:ycm_key_list_select_completion = ['<Down>','<Enter>']
-if has("unix")
- let g:ycm_path_to_python_interpreter = '/usr/bin/python'
-endif
+" completor 
+let g:completor_auto_trigger = 0
+inoremap <expr> <Tab> pumvisible() ? "<C-N>" : "<C-R>=completor#do('complete')<CR>"
 
 " UltiSnips
-" the plugin is conflicting with YCM's <tab> and set paste
 let g:UltiSnipsExpandTrigger = "<C-j>"
 let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
@@ -160,12 +144,6 @@ let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 " emmet.vim
 let g:user_emmet_install_global = 0
 let g:user_emmet_leader_key='<C-L>'
-
-" vim-markdown
-let g:markdown_fenced_languages = ['html', 'python', 'bash=sh']
-let g:vim_markdown_folding_disabled=1
-let g:vim_markdown_math=1         " LeTeX math
-let g:vim_markdown_frontmatter=1  " Highlight YAML frontmatter
 
 " Ctrlp
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*/.git/*
@@ -187,11 +165,31 @@ if executable('ag')
     let g:ctrlp_use_caching = 0
 endif
 
-" Airline
-" let g:airline#extensions#tabline#enabled = 1
-" let g:airline#extensions#tabline#fnamemod = ':t'
-" let g:airline#extensions#tabline#show_buffers = 1
-let g:airline#extensions#tabline#tab_nr_type = 1
+" Lightline
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'condaenv'],
+      \              [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'fugitive#head',
+      \   'condaenv': 'LightlineConda',
+     \ },
+      \ }
+function! LightlineConda()
+  return ($CONDA_DEFAULT_ENV != '') ? $CONDA_DEFAULT_ENV : 'default'
+endfunction
+
+" GitGutter
+let g:gitgutter_highlight_lines = 1
+highlight clear SignColumn
+ highlight GitGutterAdd ctermfg=green
+ highlight GitGutterChange ctermfg=yellow
+ highlight GitGutterDelete ctermfg=red
+ highlight GitGutterChangeDelete ctermfg=yellow
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Mapping
@@ -205,6 +203,7 @@ au FileType python map <buffer> <F8> <ESC>:w<CR>:!python %<CR>
 nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
 map <F3> :NERDTreeToggle<CR>
 map <F4> :TagbarToggle<CR>
+map <F5> :CondaChangeEnv<CR>
 map <F9> :w<CR>:call Debug()<CR>
 
 noremap <C-w>e :SyntasticCheck<CR>
