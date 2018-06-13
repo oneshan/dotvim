@@ -55,6 +55,17 @@ set directory=~/.vim/backup,.
 " ctags
 set tags=./tags;,tags;
 
+" fzf
+if executable('fzf')
+    set rtp+=/usr/local/opt/fzf
+endif
+
+" ag
+if executable('ag')
+    set grepprg=ag\ --nogroup\ --nocolor 
+endif
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " VIM setting with specific filetypes 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""" 
@@ -81,7 +92,7 @@ Plugin 'VundleVim/Vundle.vim'              " Let Vundle manage Vundle, required
 " Code/Project navigation
 Plugin 'scrooloose/nerdtree'               " A Tree explorer plugin for navigating the filesystem
 Plugin 'majutsushi/tagbar'                 " List table of function/variable like IDE
-Plugin 'ctrlpvim/ctrlp.vim'                " Fuzzy file, buffer, mru, tag, etc finder
+Plugin 'junegunn/fzf.vim'                  " Fuzzy Finder (brew install fzf)
 
 " Tool
 Plugin 'itchyny/lightline.vim'             " A statusline plugin for vim
@@ -145,26 +156,6 @@ let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 let g:user_emmet_install_global = 0
 let g:user_emmet_leader_key='<C-L>'
 
-" Ctrlp
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*/.git/*
-nnoremap <leader>. :CtrlPTag<cr>
-nnoremap <leader>, :CtrlP<cr>
-
-let g:ctrlp_match_window = 'bottom,order:ttb'
-let g:ctrlp_working_path_mode = 'ra'
-let g:ctrlp_open_new_file = 'tr'
-let g:ctrlp_open_multiple_files = 'tr'
-let g:ctrlp_custom_ignore = {
-    \ 'dir': '\v[\/]\.(git|hg|svn|node_modules)$',
-    \ 'file': '\v\.(so|pyc|swp|zip|DS_Store)$',
-    \ }
-if executable('ag')
-    set grepprg=ag\ --nogroup\ --nocolor 
-    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-    let g:ctrlp_switch_buffer = 0
-    let g:ctrlp_use_caching = 0
-endif
-
 " Lightline
 let g:lightline = {
       \ 'colorscheme': 'wombat',
@@ -182,6 +173,9 @@ function! LightlineConda()
   return ($CONDA_DEFAULT_ENV != '') ? $CONDA_DEFAULT_ENV : 'default'
 endfunction
 
+" vim-conda
+let g:conda_startup_msg_suppress = 0
+
 " GitGutter
 let g:gitgutter_highlight_lines = 1
 highlight clear SignColumn
@@ -190,24 +184,18 @@ highlight clear SignColumn
  highlight GitGutterDelete ctermfg=red
  highlight GitGutterChangeDelete ctermfg=yellow
 
-
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Mapping
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" compile key
-au FileType java nmap <F8> :w !javac "%:p" && java -cp "%:p:h" "%:t:r"<CR> 
-au FileType c nmap <F8> :w !gcc --o "%:p:r.out" "%:p" && "%:p:r.out"
-au FileType cpp nmap <F8> :w !g++ --o "%:p:r.out" "%:p" && "%:p:r.out"
-au FileType python map <buffer> <F8> <ESC>:w<CR>:!python %<CR>
-
 nnoremap <F2> :set nonumber!<CR>:set foldcolumn=0<CR>
 map <F3> :NERDTreeToggle<CR>
 map <F4> :TagbarToggle<CR>
 map <F5> :CondaChangeEnv<CR>
-map <F9> :w<CR>:call Debug()<CR>
 
 noremap <C-w>e :SyntasticCheck<CR>
 noremap <C-w>f :SyntasticToggleMode<CR>
+nnoremap <leader>, :GFiles<cr>
+nnoremap <leader>. :Tags<cr>
 
 nmap <silent> [g :<C-U> :GitGutterLineHighlightsToggle<CR>
 nmap <silent> [h :<C-U> :lprev<CR>
@@ -224,23 +212,3 @@ map g5 :tabn 5<CR>
 map gc :tabnew<CR>
 map gn :tabn<CR>
 map gp :tabp<CR>
-
-" Debug
-func Debug()
-exec "w" 
-  if &filetype == 'c' 
-    exec "!rm %<"
-    exec "!gcc % -g -o %<"
-    exec "!gdb %<"
-  elseif &filetype == 'cpp'
-    exec "!rm %<"
-    exec "!g++ % -g -o %<"
-    exec "!gdb %<"
-    exec "!rm %<.class"
-  elseif &filetype == 'java'
-    exec "!javac %"
-    exec "!jdb %<"
-  elseif &filetype == 'python'
-    exec "!pdb %"
-  endif
-endfunc
